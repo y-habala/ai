@@ -19,29 +19,50 @@ const lessonPlanSchema = {
   properties: {
     lessonInfo: {
       type: Type.OBJECT,
+      description: "Basic information about the lesson.",
       properties: {
-        subject: { type: Type.STRING },
-        gradeLevel: { type: Type.STRING },
-        lessonTitle: { type: Type.STRING },
-        duration: { type: Type.INTEGER },
-        // Fix: Add teacherName and institution to the schema to match the updated LessonPlan type and prompt.
-        teacherName: { type: Type.STRING },
-        institution: { type: Type.STRING },
+        subject: { type: Type.STRING, description: "The subject of the lesson, e.g., 'Mathematics'." },
+        gradeLevel: { type: Type.STRING, description: "The target grade level for the lesson, e.g., '5th Grade'." },
+        lessonTitle: { type: Type.STRING, description: "The title of the lesson." },
+        duration: { type: Type.INTEGER, description: "The total duration of the lesson in minutes." },
+        teacherName: { type: Type.STRING, description: "The name of the teacher (optional)." },
+        institution: { type: Type.STRING, description: "The name of the school or institution (optional)." },
       },
       required: ['subject', 'gradeLevel', 'lessonTitle', 'duration']
     },
-    objectives: { type: Type.ARRAY, items: { type: Type.STRING } },
-    prerequisites: { type: Type.ARRAY, items: { type: Type.STRING } },
-    materials: { type: Type.ARRAY, items: { type: Type.STRING } },
+    objectives: {
+      type: Type.ARRAY,
+      items: { type: Type.STRING },
+      description: "A list of key learning objectives for the lesson."
+    },
+    prerequisites: {
+      type: Type.ARRAY,
+      items: { type: Type.STRING },
+      description: "A list of skills or knowledge students should have before this lesson."
+    },
+    materials: {
+      type: Type.ARRAY,
+      items: { type: Type.STRING },
+      description: "A list of necessary materials for the lesson."
+    },
     stages: {
       type: Type.ARRAY,
+      description: "An array of lesson stages, detailing the flow of the lesson.",
       items: {
         type: Type.OBJECT,
         properties: {
-          title: { type: Type.STRING },
-          teacherActions: { type: Type.ARRAY, items: { type: Type.STRING } },
-          studentActions: { type: Type.ARRAY, items: { type: Type.STRING } },
-          duration: { type: Type.INTEGER },
+          title: { type: Type.STRING, description: "The title of the lesson stage, e.g., 'Introduction'." },
+          teacherActions: {
+            type: Type.ARRAY,
+            items: { type: Type.STRING },
+            description: "A list of actions the teacher will perform during this stage."
+          },
+          studentActions: {
+            type: Type.ARRAY,
+            items: { type: Type.STRING },
+            description: "A list of actions students will perform during this stage."
+          },
+          duration: { type: Type.INTEGER, description: "The estimated duration of this stage in minutes." },
         },
         required: ['title', 'teacherActions', 'studentActions', 'duration']
       },
@@ -55,12 +76,17 @@ const presentationSchema = {
     properties: {
         slides: {
             type: Type.ARRAY,
+            description: "An array of slides for the presentation.",
             items: {
                 type: Type.OBJECT,
                 properties: {
-                    title: { type: Type.STRING },
-                    content: { type: Type.ARRAY, items: { type: Type.STRING } },
-                    speakerNotes: { type: Type.STRING }
+                    title: { type: Type.STRING, description: "The title of the slide." },
+                    content: {
+                        type: Type.ARRAY,
+                        items: { type: Type.STRING },
+                        description: "A list of bullet points for the slide content."
+                    },
+                    speakerNotes: { type: Type.STRING, description: "Detailed notes for the presenter." }
                 },
                 required: ['title', 'content', 'speakerNotes']
             }
@@ -73,7 +99,7 @@ const presentationSchema = {
 const studentHandoutSchema = {
     type: Type.OBJECT,
     properties: {
-        htmlContent: { type: Type.STRING }
+        htmlContent: { type: Type.STRING, description: "A self-contained string of simple HTML for the student handout." }
     },
     required: ['htmlContent']
 };

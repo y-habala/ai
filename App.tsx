@@ -28,9 +28,26 @@ const getInitialLanguage = (): Language => {
     return 'en'; // Default to English for 'en' or any unsupported language
 };
 
+const getStoredFormData = (): LessonFormData => {
+    try {
+        const storedData = localStorage.getItem('lessonFormData');
+        if (storedData) {
+            // Basic validation to ensure it's not empty or malformed
+            const parsed = JSON.parse(storedData);
+            if (typeof parsed === 'object' && parsed !== null && parsed.subject !== undefined) {
+                 return parsed;
+            }
+        }
+    } catch (error) {
+        console.error("Failed to parse form data from localStorage", error);
+        localStorage.removeItem('lessonFormData');
+    }
+    return initialFormData;
+};
+
 const App: React.FC = () => {
     const [lang, setLang] = useState<Language>(getInitialLanguage());
-    const [formData, setFormData] = useState<LessonFormData>(initialFormData);
+    const [formData, setFormData] = useState<LessonFormData>(getStoredFormData);
     const [lessonPlan, setLessonPlan] = useState<LessonPlan | null>(null);
     const [appState, setAppState] = useState<AppState>('idle');
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -50,6 +67,14 @@ const App: React.FC = () => {
         document.documentElement.lang = lang;
         document.documentElement.dir = dir;
     }, [lang]);
+
+    useEffect(() => {
+        try {
+            localStorage.setItem('lessonFormData', JSON.stringify(formData));
+        } catch (error) {
+            console.error("Failed to save form data to localStorage", error);
+        }
+    }, [formData]);
 
     const handleGeneratePlan = async () => {
         setAppState('loading');
@@ -77,6 +102,7 @@ const App: React.FC = () => {
     };
 
     const handleClearForm = () => {
+        localStorage.removeItem('lessonFormData');
         setFormData(initialFormData);
         setLessonPlan(null);
         setAppState('idle');
@@ -115,6 +141,7 @@ const App: React.FC = () => {
                                 lessonPlan={lessonPlan}
                                 onGeneratePresentation={handleGeneratePresentation}
                                 onGenerateStudentHandout={handleGenerateStudentHandout}
+                                onRetry={handleGeneratePlan}
                             />
                         </div>
                     </div>

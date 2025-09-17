@@ -24,6 +24,7 @@ interface LessonDisplayProps {
     lessonPlan: LessonPlan | null;
     onGeneratePresentation: () => Promise<Presentation | null>;
     onGenerateStudentHandout: () => Promise<StudentHandout | null>;
+    onRetry: () => void;
 }
 
 type Tab = 'plan' | 'presentation' | 'handout';
@@ -40,7 +41,7 @@ const downloadFile = (content: string, filename: string, mimeType: string) => {
     URL.revokeObjectURL(url);
 };
 
-export const LessonDisplay: React.FC<LessonDisplayProps> = ({ appState, errorMessage, lessonPlan, onGeneratePresentation, onGenerateStudentHandout }) => {
+export const LessonDisplay: React.FC<LessonDisplayProps> = ({ appState, errorMessage, lessonPlan, onGeneratePresentation, onGenerateStudentHandout, onRetry }) => {
     const { t, dir } = useI18n();
     const [activeTab, setActiveTab] = useState<Tab>('plan');
     const [viewMode, setViewMode] = useState<'standard' | 'table'>('standard');
@@ -221,27 +222,53 @@ export const LessonDisplay: React.FC<LessonDisplayProps> = ({ appState, errorMes
     );
 
     const renderError = () => (
-        <div className="text-center p-10 bg-red-50 border border-red-200 rounded-lg">
+        <div className="text-center p-10 bg-red-50 border border-red-200 rounded-lg flex flex-col items-center">
             <h2 className="text-xl font-bold text-red-700">{t('errorMessage')}</h2>
             <p className="mt-2 text-red-600">{errorMessage}</p>
+            <button
+                onClick={onRetry}
+                className="mt-6 inline-flex items-center px-5 py-2.5 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
+            >
+                {t('retry')}
+            </button>
         </div>
     );
     
     const renderSuccess = () => (
         <>
             <div className="border-b border-slate-200">
-                <nav className="-mb-px flex space-x-4 rtl:space-x-reverse" aria-label="Tabs">
+                <nav className="-mb-px flex space-x-4 rtl:space-x-reverse" aria-label="Tabs" role="tablist">
                     {(['plan', 'presentation', 'handout'] as Tab[]).map(tab => (
-                        <button key={tab} onClick={() => setActiveTab(tab)} className={`${activeTab === tab ? 'border-cyan-500 text-cyan-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>
+                        <button 
+                            key={tab} 
+                            id={`tab-${tab}`}
+                            role="tab"
+                            aria-controls={`tabpanel-${tab}`}
+                            aria-selected={activeTab === tab}
+                            onClick={() => setActiveTab(tab)} 
+                            className={`${activeTab === tab ? 'border-cyan-500 text-cyan-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500 rounded-t-md`}
+                        >
                             {t(tab === 'plan' ? 'lessonPlanTab' : tab === 'presentation' ? 'presentationTab' : 'studentHandoutTab')}
                         </button>
                     ))}
                 </nav>
             </div>
             <div className="pt-8">
-                {activeTab === 'plan' && renderLessonPlan()}
-                {activeTab === 'presentation' && renderPresentation()}
-                {activeTab === 'handout' && renderStudentHandout()}
+                {activeTab === 'plan' && (
+                    <div id="tabpanel-plan" role="tabpanel" aria-labelledby="tab-plan">
+                        {renderLessonPlan()}
+                    </div>
+                )}
+                {activeTab === 'presentation' && (
+                    <div id="tabpanel-presentation" role="tabpanel" aria-labelledby="tab-presentation">
+                        {renderPresentation()}
+                    </div>
+                )}
+                {activeTab === 'handout' && (
+                    <div id="tabpanel-handout" role="tabpanel" aria-labelledby="tab-handout">
+                        {renderStudentHandout()}
+                    </div>
+                )}
             </div>
         </>
     );
