@@ -65,24 +65,12 @@ const App: React.FC = () => {
 
     const handleGeneratePresentation = async (): Promise<Presentation | null> => {
         if (!lessonPlan) return null;
-        try {
-            return await generatePresentation(lessonPlan, lang);
-        } catch (error) {
-            console.error(error);
-            // Optionally set an error message for this specific action
-            return null;
-        }
+        return await generatePresentation(lessonPlan, lang);
     };
 
     const handleGenerateStudentHandout = async (): Promise<StudentHandout | null> => {
         if (!lessonPlan) return null;
-        try {
-            return await generateStudentHandout(lessonPlan, lang);
-        } catch (error) {
-            console.error(error);
-            // Optionally set an error message for this specific action
-            return null;
-        }
+        return await generateStudentHandout(lessonPlan, lang);
     };
 
     const handleClearForm = () => {

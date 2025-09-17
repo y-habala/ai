@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { LessonPlan, Presentation, StudentHandout, AppState } from '../types';
 import { useI18n } from '../hooks/useI18n';
@@ -48,10 +47,12 @@ export const LessonDisplay: React.FC<LessonDisplayProps> = ({ appState, errorMes
     
     const [presentation, setPresentation] = useState<Presentation | null>(null);
     const [isPresentationLoading, setIsPresentationLoading] = useState(false);
+    const [presentationError, setPresentationError] = useState<string | null>(null);
     const [includeSpeakerNotes, setIncludeSpeakerNotes] = useState(true);
 
     const [studentHandout, setStudentHandout] = useState<StudentHandout | null>(null);
     const [isHandoutLoading, setIsHandoutLoading] = useState(false);
+    const [handoutError, setHandoutError] = useState<string | null>(null);
 
     const [copyStatus, setCopyStatus] = useState(false);
     const contentRef = useRef<HTMLDivElement>(null);
@@ -61,25 +62,41 @@ export const LessonDisplay: React.FC<LessonDisplayProps> = ({ appState, errorMes
             setActiveTab('plan');
             setPresentation(null);
             setStudentHandout(null);
+            setPresentationError(null);
+            setHandoutError(null);
         }
     }, [appState, lessonPlan]);
 
     const handleGeneratePresentation = async () => {
         setIsPresentationLoading(true);
-        const result = await onGeneratePresentation();
-        if (result) {
-            setPresentation(result);
+        setPresentationError(null);
+        setPresentation(null);
+        try {
+            const result = await onGeneratePresentation();
+            if (result) {
+                setPresentation(result);
+            }
+        } catch (error) {
+            setPresentationError((error as Error).message || t('errorMessage'));
+        } finally {
+            setIsPresentationLoading(false);
         }
-        setIsPresentationLoading(false);
     };
 
     const handleGenerateHandout = async () => {
         setIsHandoutLoading(true);
-        const result = await onGenerateStudentHandout();
-        if (result) {
-            setStudentHandout(result);
+        setHandoutError(null);
+        setStudentHandout(null);
+        try {
+            const result = await onGenerateStudentHandout();
+            if (result) {
+                setStudentHandout(result);
+            }
+        } catch (error) {
+            setHandoutError((error as Error).message || t('errorMessage'));
+        } finally {
+            setIsHandoutLoading(false);
         }
-        setIsHandoutLoading(false);
     };
 
     const handlePrint = () => {
@@ -314,6 +331,15 @@ export const LessonDisplay: React.FC<LessonDisplayProps> = ({ appState, errorMes
         if (isPresentationLoading) {
             return <div className="flex items-center justify-center p-10"><SpinnerIcon className="h-8 w-8 text-cyan-600 animate-spin" /><span className="ms-3 text-slate-600">{t('generatingPresentation')}</span></div>;
         }
+        if (presentationError) {
+            return (
+                <div className="text-center p-10 bg-red-50 border border-red-200 rounded-lg">
+                    <h2 className="text-xl font-bold text-red-700">{t('errorMessage')}</h2>
+                    <p className="mt-2 text-red-600">{presentationError}</p>
+                    <button onClick={handleGeneratePresentation} className="mt-4 px-5 py-2.5 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors">{t('retry')}</button>
+                </div>
+            );
+        }
         if (!presentation) {
             return (
                 <div className="text-center p-10">
@@ -374,6 +400,15 @@ export const LessonDisplay: React.FC<LessonDisplayProps> = ({ appState, errorMes
     const renderStudentHandout = () => {
         if (isHandoutLoading) {
             return <div className="flex items-center justify-center p-10"><SpinnerIcon className="h-8 w-8 text-cyan-600 animate-spin" /><span className="ms-3 text-slate-600">{t('generatingHandout')}</span></div>;
+        }
+        if (handoutError) {
+             return (
+                <div className="text-center p-10 bg-red-50 border border-red-200 rounded-lg">
+                    <h2 className="text-xl font-bold text-red-700">{t('errorMessage')}</h2>
+                    <p className="mt-2 text-red-600">{handoutError}</p>
+                    <button onClick={handleGenerateHandout} className="mt-4 px-5 py-2.5 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors">{t('retry')}</button>
+                </div>
+            );
         }
         if (!studentHandout) {
             return (

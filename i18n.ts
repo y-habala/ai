@@ -85,6 +85,9 @@ export const translations: Translations = {
     handout_prompt: "Click the button to generate a student-friendly summary of the lesson.",
     downloadDoc_tooltip: "Download as .doc",
 
+    // Generic actions
+    retry: "Retry",
+
     // Footer
     developedBy: "Developed by Youssef HABALA",
   },
@@ -147,6 +150,7 @@ export const translations: Translations = {
     generatingHandout: "Génération de la leçon...",
     handout_prompt: "Cliquez sur le bouton pour générer un résumé de la leçon adapté aux élèves.",
     downloadDoc_tooltip: "Télécharger en .doc",
+    retry: "Réessayer",
     developedBy: "Développé par Youssef HABALA",
   },
   ar: {
@@ -208,6 +212,7 @@ export const translations: Translations = {
     generatingHandout: "جاري إنشاء الدرس...",
     handout_prompt: "انقر على الزر لإنشاء ملخص للدرس مناسب للطلاب.",
     downloadDoc_tooltip: "تنزيل كملف .doc",
+    retry: "إعادة المحاولة",
     developedBy: "تم التطوير من طرف يوسف هبالة",
   },
 };
