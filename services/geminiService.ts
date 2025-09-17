@@ -4,6 +4,16 @@ import { getLessonPlanPrompt, getPresentationPrompt, getStudentHandoutPrompt } f
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
+// Helper to extract JSON from a string that might be wrapped in markdown code fences.
+const extractJson = (text: string): string => {
+    const regex = /```json\s*([\s\S]*?)\s*```/;
+    const match = text.match(regex);
+    if (match && match[1]) {
+        return match[1];
+    }
+    return text;
+};
+
 const lessonPlanSchema = {
   type: Type.OBJECT,
   properties: {
@@ -81,7 +91,7 @@ export const generateLessonPlan = async (formData: LessonFormData, lang: Languag
       },
     });
     
-    const jsonText = response.text.trim();
+    const jsonText = extractJson(response.text.trim());
     return JSON.parse(jsonText) as LessonPlan;
   } catch (error) {
     console.error("Error generating lesson plan:", error);
@@ -101,7 +111,7 @@ export const generatePresentation = async (lessonPlan: LessonPlan, lang: Languag
           },
         });
 
-        const jsonText = response.text.trim();
+        const jsonText = extractJson(response.text.trim());
         return JSON.parse(jsonText) as Presentation;
     } catch (error) {
         console.error("Error generating presentation:", error);
@@ -121,7 +131,7 @@ export const generateStudentHandout = async (lessonPlan: LessonPlan, lang: Langu
           },
         });
         
-        const jsonText = response.text.trim();
+        const jsonText = extractJson(response.text.trim());
         return JSON.parse(jsonText) as StudentHandout;
     } catch (error) {
         console.error("Error generating student handout:", error);
