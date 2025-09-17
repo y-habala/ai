@@ -1,15 +1,8 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { LessonFormData, LessonPlan, Presentation, StudentHandout, Language } from '../types';
 import { getLessonPlanPrompt, getPresentationPrompt, getStudentHandoutPrompt } from './prompts';
 
-const API_KEY = process.env.API_KEY;
-
-if (!API_KEY) {
-  throw new Error("API_KEY environment variable is not set.");
-}
-
-const ai = new GoogleGenAI({ apiKey: API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 const lessonPlanSchema = {
   type: Type.OBJECT,
