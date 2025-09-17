@@ -1,0 +1,5 @@
+{
+  "name": "Lesson Plan Generator",
+  "description": "An application to help teachers create detailed lesson plans, presentations, and student notes using the Google Gemini API, with support for multiple languages (Arabic, English, French).",
+  "requestFramePermissions": []
+}
