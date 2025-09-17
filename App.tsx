@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { LessonForm } from './components/LessonForm';
 import { LessonDisplay } from './components/LessonDisplay';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
@@ -36,16 +36,19 @@ const App: React.FC = () => {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const i18nValue = useMemo(() => {
-        // Fix: Explicitly type `dir` to match the I18nContextType.
         const dir: 'ltr' | 'rtl' = lang === 'ar' ? 'rtl' : 'ltr';
-        document.documentElement.lang = lang;
-        document.documentElement.dir = dir;
         return {
             lang,
             setLang,
             t: (key: string) => translations[lang][key] || key,
             dir,
         };
+    }, [lang]);
+
+    useEffect(() => {
+        const dir = lang === 'ar' ? 'rtl' : 'ltr';
+        document.documentElement.lang = lang;
+        document.documentElement.dir = dir;
     }, [lang]);
 
     const handleGeneratePlan = async () => {
